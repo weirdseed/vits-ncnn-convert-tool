@@ -18,6 +18,7 @@ convert_model.exe -c \path\to\config.json -m \path\to\model.pth -fp16
 1.创建虚拟环境
 ```
 conda create -n vits-ncnn python=3.10
+conda activate vits-ncnn
 ```
 2.安装依赖
 ```
