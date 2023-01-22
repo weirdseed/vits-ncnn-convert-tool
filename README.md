@@ -33,3 +33,5 @@ https://github.com/jaywalnut310/vits
 https://github.com/pnnx/pnnx
 
 https://github.com/Tencent/ncnn
+
+https://github.com/CjangCjengh/MoeGoe
