@@ -91,7 +91,7 @@ def convert_model(net, folder, name, multi):
 
     path_pt = os.path.join(folder, name+".pt")
     torch.jit.trace(layer, layer_inputs[name]).save(path_pt)
-    os.system("{} {} fp16={} moduleop={}".format(pnnx_path, path_pt, fp16, custom_ops[name]))
+    os.system("{} {} fp16={} moduleop={}".format(pnnx_path, path_pt, 1 if fp16 else 0, custom_ops[name]))
 
 def export(root_folder, out_folder, name):
     # copy files
