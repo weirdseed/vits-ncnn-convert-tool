@@ -183,10 +183,11 @@ def main(args):
     emb_weight = net_g.enc_p.emb.weight.data.flatten().numpy().astype("float32")
     with open(os.path.join(out_root, "emb_t.bin"), "wb") as f:
         f.write(emb_weight)
-
-    emb_weight = net_g.emb_g.weight.data.flatten().numpy().astype("float32")
-    with open(os.path.join(out_root, "emb_g.bin"), "wb") as f:
-        f.write(emb_weight)
+        
+    if multi:
+        emb_weight = net_g.emb_g.weight.data.flatten().numpy().astype("float32")
+        with open(os.path.join(out_root, "emb_g.bin"), "wb") as f:
+            f.write(emb_weight)
 
     # export
     for folder in folders[2:]:
