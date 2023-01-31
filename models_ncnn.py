@@ -116,14 +116,15 @@ class TextEncoder(nn.Module):
         self.transepose = modules.Transpose()
         self.sequence_mask = modules.SequenceMask()
         self.emb = nn.Embedding(n_vocab, hidden_channels)
+        self.text_emb = modules.TextEmbedding()
         nn.init.normal_(self.emb.weight, 0.0, hidden_channels**-0.5)
 
         self.encoder = attentions.Encoder(
             hidden_channels, filter_channels, n_heads, n_layers, kernel_size, p_dropout)
         self.proj = nn.Conv1d(hidden_channels, out_channels * 2, 1)
 
-    def forward(self, x, x_lengths):
-        x = self.emb(x)
+    def forward(self, x, x_lengths, emb_weight):
+        x = self.text_emb(x, emb_weight)
         x = x * math.sqrt(self.hidden_channels)  # [b, t, h]
         x = self.transepose(x)
         x_mask = self.sequence_mask(x, x_lengths).unsqueeze(1)
@@ -332,7 +333,8 @@ class SynthesizerTrn(nn.Module):
         return o_hat[0, 0]
 
     def forward(self, x, sid=0, noise_scale=.667, noise_scale_w=0.8, length_scale=1):
-        x, m_p, logs_p, x_mask = self.enc_p(x, torch.LongTensor([x.size(1)]))
+        emb_weight = self.enc_p.emb.weight.data
+        x, m_p, logs_p, x_mask = self.enc_p(x, torch.LongTensor([x.size(1)]), emb_weight)
         if self.n_speakers > 0:
             g = self.emb_g(torch.LongTensor([sid])).unsqueeze(-1)  # [b, h, 1]
         else:

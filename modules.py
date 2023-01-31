@@ -90,6 +90,14 @@ class RandnLike(nn.Module):
     rand_m = torch.rand_like(x)
     return rand_m
 
+class TextEmbedding(nn.Module):
+  def __init__(self) -> None:
+    super().__init__()
+
+  def forward(self, x, weight):
+    ret = F.embedding(x, weight)
+    return ret
+    
 class WN(torch.nn.Module):
   def __init__(self, hidden_channels, kernel_size, dilation_rate, n_layers, gin_channels=0, p_dropout=0):
     super(WN, self).__init__()

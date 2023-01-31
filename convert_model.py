@@ -54,7 +54,7 @@ def convert_model(net, folder, name, multi):
     layer_inputs = None
     if multi:
         layer_inputs = {
-            "enc_p": [torch.randint(0,20,(1,100)), torch.LongTensor([100])],
+            "enc_p": [torch.randint(0,20,(1,100)), torch.LongTensor([100]), net.enc_p.emb.weight.data],
             "emb_g": [torch.LongTensor([0])],
             "dp": [torch.randn((1,192,100)),torch.ones((1,1,100)),torch.randn((1, 2, 100)),0.8 * torch.ones((1,2,100)),torch.randn((1,256,1))],
             "flow":[torch.randn((1,192,255)),torch.ones((1,1,255)),torch.randn((1,256,1))],
@@ -64,13 +64,13 @@ def convert_model(net, folder, name, multi):
         }
     else:
         layer_inputs = {
-            "enc_p": [torch.randint(0,20,(1,100)), torch.LongTensor([100])],
+            "enc_p": [torch.randint(0,20,(1,100)), torch.LongTensor([100]), net.enc_p.emb.weight.data],
             "dp": [torch.randn((1,192,100)),torch.ones((1,1,100)),torch.randn((1, 2, 100)),0.8 * torch.ones((1,2,100))],
             "flow.reverse": [torch.randn((1,192,255)),torch.ones((1,1,255))],
             "dec": [torch.randn((1,192,255))],
         }
     custom_ops = {
-        "enc_p": "modules.Transpose,modules.SequenceMask,attentions.Attention,attentions.ExpandDim,attentions.SamePadding",
+        "enc_p": "modules.Transpose,modules.SequenceMask,modules.TextEmbedding,attentions.Attention,attentions.ExpandDim,attentions.SamePadding",
         "emb_g": "Embedding",
         "dp": "modules.PRQTransform,modules.Transpose,modules.ReduceDims",
         "flow": "modules.ResidualReverse",
@@ -88,7 +88,6 @@ def convert_model(net, folder, name, multi):
         layer.reverse = False
     else:
         layer = getattr(net, name)
-
     path_pt = os.path.join(folder, name+".pt")
     torch.jit.trace(layer, layer_inputs[name]).save(path_pt)
     os.system("{} {} fp16={} moduleop={}".format(pnnx_path, path_pt, 1 if fp16 else 0, custom_ops[name]))
@@ -98,6 +97,7 @@ def export(root_folder, out_folder, name):
     src_folder = os.path.join(root_folder, name)
     if name == "flow_reverse":
         name = name.replace("_",".")
+
     src_path = os.path.join(src_folder, name+".ncnn.bin")
     target_path = os.path.join(out_folder, name+".ncnn.bin")
     shutil.copy(src_path, target_path)
@@ -134,6 +134,9 @@ def main(args):
     hps = get_hparams_from_file(config_path)
     n_symbols = len(hps.symbols) if 'symbols' in hps.keys() else 0
 
+    if n_symbols == 0:
+        raise RuntimeError("Symbols can not be empty!")
+        
     for cleaner in hps.data.text_cleaners:
         if cleaner not in ["japanese_cleaners","japanese_cleaners2"]:
             raise RuntimeError("This cleaner is not supported!")
@@ -182,9 +185,14 @@ def main(args):
         name = folder.replace(cache_root, "")
         convert_model(net_g, folder, name, multi)
 
-    # export and clean
+    # export text embedding
+    emb_weight = net_g.enc_p.emb.weight.data.flatten().numpy().astype("float32")
+    with open(os.path.join(out_root, "emb_t.bin"), "wb") as f:
+        f.write(emb_weight)
+
+    # export
     for folder in folders[2:]:
-        name = folder .replace(cache_root, "")
+        name = folder.replace(cache_root, "")
         export(cache_root, out_root, name)
 
     # clean
