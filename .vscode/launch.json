@@ -9,6 +9,13 @@
             "type": "python",
             "request": "launch",
             "program": "convert_model.py",
+            "args": [
+                "-c",
+                "models/config.json",
+                "-m",
+                "models/1113_epochs.pth",
+                "-fp16"
+            ],
             "console": "integratedTerminal",
             "justMyCode": true
         }
