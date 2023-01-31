@@ -90,7 +90,7 @@ class RandnLike(nn.Module):
     rand_m = torch.rand_like(x)
     return rand_m
 
-class TextEmbedding(nn.Module):
+class Embedding(nn.Module):
   def __init__(self) -> None:
     super().__init__()
 

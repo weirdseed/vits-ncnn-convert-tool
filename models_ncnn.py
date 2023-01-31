@@ -116,7 +116,7 @@ class TextEncoder(nn.Module):
         self.transepose = modules.Transpose()
         self.sequence_mask = modules.SequenceMask()
         self.emb = nn.Embedding(n_vocab, hidden_channels)
-        self.text_emb = modules.TextEmbedding()
+        self.text_emb = modules.Embedding()
         nn.init.normal_(self.emb.weight, 0.0, hidden_channels**-0.5)
 
         self.encoder = attentions.Encoder(

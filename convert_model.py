@@ -24,9 +24,6 @@ def create_folders(model_path, multi):
     # enc_p folder
     enc_p_folder = cache_root + "enc_p"
 
-    # emb_g_folder
-    emb_g_folder = cache_root + "emb_g"
-
     # dp
     dp_folder = cache_root + "dp"
 
@@ -36,10 +33,9 @@ def create_folders(model_path, multi):
     # enc_q
     enc_q_folder = cache_root + "enc_q"
 
-    folders = [cache_root, out_folder, flow_reversed_folder, flow_folder,  enc_p_folder, emb_g_folder, dp_folder, dec_folder, enc_q_folder]
+    folders = [cache_root, out_folder, flow_reversed_folder, flow_folder,  enc_p_folder, dp_folder, dec_folder, enc_q_folder]
 
     if not multi:
-        folders.remove(emb_g_folder)
         folders.remove(flow_folder)
         folders.remove(enc_q_folder)
     
@@ -55,7 +51,6 @@ def convert_model(net, folder, name, multi):
     if multi:
         layer_inputs = {
             "enc_p": [torch.randint(0,20,(1,100)), torch.LongTensor([100]), net.enc_p.emb.weight.data],
-            "emb_g": [torch.LongTensor([0])],
             "dp": [torch.randn((1,192,100)),torch.ones((1,1,100)),torch.randn((1, 2, 100)),0.8 * torch.ones((1,2,100)),torch.randn((1,256,1))],
             "flow":[torch.randn((1,192,255)),torch.ones((1,1,255)),torch.randn((1,256,1))],
             "flow.reverse": [torch.randn((1,192,255)),torch.ones((1,1,255)),torch.randn((1,256,1))],
@@ -70,8 +65,7 @@ def convert_model(net, folder, name, multi):
             "dec": [torch.randn((1,192,255))],
         }
     custom_ops = {
-        "enc_p": "modules.Transpose,modules.SequenceMask,modules.TextEmbedding,attentions.Attention,attentions.ExpandDim,attentions.SamePadding",
-        "emb_g": "Embedding",
+        "enc_p": "modules.Transpose,modules.SequenceMask,modules.Embedding,attentions.Attention,attentions.ExpandDim,attentions.SamePadding",
         "dp": "modules.PRQTransform,modules.Transpose,modules.ReduceDims",
         "flow": "modules.ResidualReverse",
         "flow.reverse": "modules.ResidualReverse",
@@ -185,9 +179,13 @@ def main(args):
         name = folder.replace(cache_root, "")
         convert_model(net_g, folder, name, multi)
 
-    # export text embedding
+    # export embedding
     emb_weight = net_g.enc_p.emb.weight.data.flatten().numpy().astype("float32")
     with open(os.path.join(out_root, "emb_t.bin"), "wb") as f:
+        f.write(emb_weight)
+
+    emb_weight = net_g.emb_g.weight.data.flatten().numpy().astype("float32")
+    with open(os.path.join(out_root, "emb_g.bin"), "wb") as f:
         f.write(emb_weight)
 
     # export
