@@ -182,7 +182,7 @@ def get_hparams_from_dir(model_dir):
 
 
 def get_hparams_from_file(config_path):
-  with open(config_path, "r") as f:
+  with open(config_path, "r", encoding="utf8") as f:
     data = f.read()
   config = json.loads(data)
 

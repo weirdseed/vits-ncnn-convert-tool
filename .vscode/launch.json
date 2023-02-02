@@ -11,9 +11,9 @@
             "program": "convert_model.py",
             "args": [
                 "-c",
-                "models/config.json",
+                "models/cjangconfig.json",
                 "-m",
-                "models/1113_epochs.pth",
+                "models/365_epochs.pth",
                 "-fp16"
             ],
             "console": "integratedTerminal",

@@ -33,6 +33,7 @@ def create_folders(model_path, multi):
     # enc_q
     enc_q_folder = cache_root + "enc_q"
 
+
     folders = [cache_root, out_folder, flow_reversed_folder, flow_folder,  enc_p_folder, dp_folder, dec_folder, enc_q_folder]
 
     if not multi:
@@ -62,7 +63,7 @@ def convert_model(net, folder, name, multi):
             "enc_p": [torch.randint(0,20,(1,100)), torch.LongTensor([100]), net.enc_p.emb.weight.data],
             "dp": [torch.randn((1,192,100)),torch.ones((1,1,100)),torch.randn((1, 2, 100)),0.8 * torch.ones((1,2,100))],
             "flow.reverse": [torch.randn((1,192,255)),torch.ones((1,1,255))],
-            "dec": [torch.randn((1,192,255))],
+            "dec": [torch.randn((1,192,255))]
         }
     custom_ops = {
         "enc_p": "modules.Transpose,modules.SequenceMask,modules.Embedding,attentions.Attention,attentions.ExpandDim,attentions.SamePadding",
@@ -70,7 +71,7 @@ def convert_model(net, folder, name, multi):
         "flow": "modules.ResidualReverse",
         "flow.reverse": "modules.ResidualReverse",
         "dec": "",
-        "enc_q": "modules.RandnLike,modules.ResidualReverse,modules.SequenceMask"
+        "enc_q": "modules.RandnLike,modules.ResidualReverse,modules.SequenceMask",
     }
     
     if name == "flow_reverse":
@@ -118,11 +119,10 @@ def main(args):
         raise RuntimeError("Config file does not exist!")
 
     if not os.path.exists(model_path):
-        raise RuntimeError("Model file does not exist! Currently only \"japanese_leaners\" and \"japanese_leaners2\" are supported.")
+        raise RuntimeError("Model file does not exist!")
 
     if not os.path.exists(pnnx_path):
         raise RuntimeError("pnnx does not exist!")
-
 
     # load configs
     hps = get_hparams_from_file(config_path)
@@ -133,7 +133,7 @@ def main(args):
         
     for cleaner in hps.data.text_cleaners:
         if cleaner not in ["japanese_cleaners","japanese_cleaners2","chinese_cleaners"]:
-            raise RuntimeError("This cleaner is not supported!")
+            raise RuntimeError("This cleaner is not supported! Currently only \"japanese_leaners\" and \"japanese_leaners2\" are supported.")
 
     if hps.data.n_speakers > 0:
         multi = True
