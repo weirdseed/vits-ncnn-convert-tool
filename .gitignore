@@ -1,0 +1,11 @@
+__pycache__/commons.cpython-310.pyc
+models/genshin_base.json
+models/G_bb_v100_820000.pth
+models/G_1434000.pth
+models/config.json
+__pycache__/utils.cpython-310.pyc
+__pycache__/ncnn_transforms.cpython-310.pyc
+__pycache__/modules.cpython-310.pyc
+__pycache__/models_ncnn.cpython-310.pyc
+__pycache__/attentions.cpython-310.pyc
+.vscode/launch.json

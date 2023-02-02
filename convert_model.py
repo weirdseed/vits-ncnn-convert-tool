@@ -132,7 +132,7 @@ def main(args):
         raise RuntimeError("Symbols can not be empty!")
         
     for cleaner in hps.data.text_cleaners:
-        if cleaner not in ["japanese_cleaners","japanese_cleaners2"]:
+        if cleaner not in ["japanese_cleaners","japanese_cleaners2","chinese_cleaners"]:
             raise RuntimeError("This cleaner is not supported!")
 
     if hps.data.n_speakers > 0:
