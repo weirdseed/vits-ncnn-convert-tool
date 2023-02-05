@@ -7,7 +7,7 @@
 ## Windows
 命令行输入：
 ```
-convert_model.exe -c \path\to\config.json -m \path\to\model.pth -fp16
+.\convert_model.exe -c \path\to\config.json -m \path\to\model.pth -fp16
 ```
 ## Linux
 命令行输入
