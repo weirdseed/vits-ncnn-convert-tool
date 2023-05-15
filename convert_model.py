@@ -113,7 +113,7 @@ def main(args):
     elif os.name == "posix":
         pnnx_path = "pnnx/pnnx"
     else:
-        raise RuntimeError("unsupported system!")
+        raise RuntimeError("Unsupported system!")
 
     if not os.path.exists(config_path):
         raise RuntimeError("Config file does not exist!")
@@ -130,10 +130,6 @@ def main(args):
 
     if n_symbols == 0:
         raise RuntimeError("Symbols can not be empty!")
-        
-    for cleaner in hps.data.text_cleaners:
-        if cleaner not in ["japanese_cleaners","japanese_cleaners2","chinese_cleaners"]:
-            raise RuntimeError("This cleaner is not supported! Currently only \"japanese_leaners\" and \"japanese_leaners2\" are supported.")
 
     if hps.data.n_speakers > 0:
         multi = True
@@ -158,16 +154,14 @@ def main(args):
     _ = load_checkpoint(model_path,net_g, None)
 
     # remove redundant weigths
-    for k, module in net_g.named_modules():
-        try:
-            g = getattr(module, "weight_g")
-            v = getattr(module, "weight_v")
+    for _, module in net_g.named_modules():
+        g = getattr(module, "weight_g", None)
+        v = getattr(module, "weight_v", None)
+        if g != None and v != None:
             normed = _weight_norm(v, g, 0)
             module.weight = Parameter(normed)
             delattr(module, "weight_g")
             delattr(module, "weight_v")
-        except Exception:
-            continue
     
     # create folders
     folders = create_folders(model_path, multi)
