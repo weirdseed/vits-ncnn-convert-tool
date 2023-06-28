@@ -126,7 +126,14 @@ def main(args):
 
     # load configs
     hps = get_hparams_from_file(config_path)
-    n_symbols = len(hps.symbols) if 'symbols' in hps.keys() else 0
+
+    # 增加对https://github.com/JOETtheIV/VITS-Paimon的支持，请手动添加n_vocabs参数到配置文件的data下
+    if "n_vocabs" in hps.data.keys():
+        n_symbols = hps.data.n_vocabs
+    elif "symbols" in hps.keys():
+        n_symbols = len(hps.symbols)
+    else:
+        n_symbols = 0
 
     if n_symbols == 0:
         raise RuntimeError("Symbols can not be empty!")
