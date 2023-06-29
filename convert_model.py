@@ -140,6 +140,8 @@ def main(args):
 
     if hps.data.n_speakers > 0:
         multi = True
+        if hps.data.n_speakers != len(hps.speakers):
+            raise RuntimeError("n_speakers and speakers mismatch!")
 
     # create model
     if multi:

@@ -19,9 +19,9 @@
             "program": "convert_model.py",
             "args": [
                 "-c",
-                "models/G_1434000.json",
+                "models/dingzhen.json",
                 "-m",
-                "models/G_1434000.pth",
+                "models/dingzhen.pth",
                 "-fp16"
             ],
             "console": "integratedTerminal",

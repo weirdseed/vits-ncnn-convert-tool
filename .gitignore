@@ -81,3 +81,15 @@ G_1434000/flow.reverse.ncnn.bin
 models/1026_epochs.json
 models/1026_epochs.pth
 .vscode/launch.json
+.vscode/launch.json
+dingzhen/config.json
+dingzhen/dec.ncnn.bin
+dingzhen/dp.ncnn.bin
+dingzhen/emb_g.bin
+dingzhen/emb_t.bin
+dingzhen/enc_p.ncnn.bin
+dingzhen/enc_q.ncnn.bin
+dingzhen/flow.ncnn.bin
+dingzhen/flow.reverse.ncnn.bin
+models/dingzhen.json
+models/dingzhen.pth
